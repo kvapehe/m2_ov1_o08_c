@@ -1,13 +1,15 @@
 /**
- * Siden det er lite variasjon med temperatursensor så kan en istedenfor å multiplisere et tall med en faktor overføre den til en annen skala med map-funksjonen.
+ * Siden det er lite accelerometeret i mg-instilling er litt tung å ha med å gjøre. Valgte derfor å droppe vising med Mbit, både symboler og tall.
  * 
- * Valgte verdier her gir frekvensen 20 Hz ved -5 grader, ca 950 Hz ved 15 grader som fortsatt er kladt
+ * Med et OLED-display gan verdier vises. NB MAP er ikke med fornuftige verdier med tanke på lyd eller vinsg av verdier.
  * 
- * og opp til 1480 Hz ved 27 grader, som begynner å bli varmt. Maks verdi er 2550 Hz
+ * Siden måler er i mg-modus kan en anta en må trykke på en elektronisk komponent
  * 
- * Variablene sensorverdi_raw og sensorverdi_map viser disse verdiene.
+ * for å måle ulig strength, men en kan også hive Microbit av gårde og få ulike målinger. Lyden er gjort svært kort for å ikke plage for mye, men det er ulike frekvenser.
  * 
- * A og B - tastene brukes til å bytte mellom to visninger.
+ * A og B - tastene brukes til å bytte mellom to visninger, men kun på OLED
+ * 
+ * dersom en har slikt display tilgjengelig.
  */
 input.onButtonPressed(Button.A, function () {
     debug = 0
@@ -24,14 +26,12 @@ basic.forever(function () {
     sensorverdi_raw = input.acceleration(Dimension.Strength)
     sensorverdi_map = Math.map(sensorverdi_raw, -5, 50, 20, 2550)
     if (debug == 0) {
-        basic.showNumber(sensorverdi_raw)
         OLED.writeNum(sensorverdi_raw)
         OLED.newLine()
     } else {
-        // Microbit kan kun vise et tall / tegn av gange, men å vise tal med f.eks. tone er en metode som ofte brukes for å vise et tall. Avstandssenorer kan blant annet bruke slik varsling. Bytt gjerne ut _raw med _map. Da kan en se verdiene som er benyttet i IF-testene
-        basic.showNumber(sensorverdi_map)
         OLED.writeNum(sensorverdi_map)
         OLED.newLine()
     }
-    music.playTone(sensorverdi_map, music.beat(BeatFraction.Sixteenth))
+    basic.pause(40)
+    music.playTone(sensorverdi_raw, music.beat(BeatFraction.Eighth))
 })
